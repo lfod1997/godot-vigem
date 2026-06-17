@@ -11,6 +11,7 @@ set(GODOT_PROJECT_DIR "project" CACHE STRING "The directory of a Godot project f
 # Make sure all the dependencies are satisfied
 find_package(Python3 3.4 REQUIRED)
 find_program(GIT git REQUIRED)
+add_subdirectory(packages/ViGEmClient SYSTEM)
 
 # Ensure godot-cpp submodule has been updated
 if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
@@ -70,6 +71,7 @@ if(DOC_XML)
 endif()
 
 target_link_libraries(${LIBNAME} PRIVATE godot-cpp)
+target_link_libraries(${LIBNAME} PRIVATE ViGEmClient)
 
 # Require at least C++17 for this target
 set_property(TARGET ${LIBNAME} PROPERTY CXX_STANDARD 17)
