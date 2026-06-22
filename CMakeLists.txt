@@ -56,6 +56,8 @@ target_sources(${LIBNAME}
     PRIVATE
     src/register_types.cpp
     src/register_types.h
+    src/vigem_server.cpp
+    src/vigem_server.h
     src/example_class.cpp
     src/example_class.h
 )

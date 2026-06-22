@@ -4,20 +4,40 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/core/defs.hpp>
 
+#include "vigem_server.h"
 #include "example_class.h"
 
 using namespace godot;
 
+static ViGEmServer *server = nullptr;
+
 void initialize_gdextension_types(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	switch (p_level) {
+	case MODULE_INITIALIZATION_LEVEL_SERVERS: {
+		GDREGISTER_CLASS(ViGEmServer);
+		server = memnew(ViGEmServer);
+		Error err = server->init();
+		ERR_FAIL_COND_MSG(err != OK, vformat("ViGEmServer initialization failed: %s.", UtilityFunctions::error_string(err)));
+		break;
 	}
-	GDREGISTER_CLASS(ExampleClass);
+	case MODULE_INITIALIZATION_LEVEL_SCENE: {
+		GDREGISTER_CLASS(ExampleClass);
+		break;
+	}
+	default: break;
+	}
 }
 
 void uninitialize_gdextension_types(ModuleInitializationLevel p_level) {
-	if (p_level != MODULE_INITIALIZATION_LEVEL_SCENE) {
-		return;
+	switch (p_level) {
+	case MODULE_INITIALIZATION_LEVEL_SERVERS: {
+		if (server) {
+			server->finish();
+			memdelete(server);
+		}
+		break;
+	}
+	default: break;
 	}
 }
 
