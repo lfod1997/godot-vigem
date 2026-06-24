@@ -5,3 +5,6 @@
 [submodule "packages/ViGEmClient"]
 	path = packages/ViGEmClient
 	url = git@github.com:nefarius/ViGEmClient.git
+[submodule "packages/frozen"]
+	path = packages/frozen
+	url = git@github.com:serge-sans-paille/frozen.git
