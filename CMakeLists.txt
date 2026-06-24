@@ -13,6 +13,7 @@ if(WIN32)
     find_package(Python3 3.4 REQUIRED)
     find_program(GIT git REQUIRED)
     add_subdirectory(packages/ViGEmClient SYSTEM)
+    add_subdirectory(packages/frozen SYSTEM)
 
     # Ensure godot-cpp submodule has been updated
     if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
@@ -75,6 +76,7 @@ if(WIN32)
 
     target_link_libraries(${LIBNAME} PRIVATE godot-cpp)
     target_link_libraries(${LIBNAME} PRIVATE ViGEmClient)
+    target_link_libraries(${LIBNAME} PRIVATE frozen)
     target_link_libraries(${LIBNAME} PRIVATE setupapi)
 
     # Require at least C++17 for this target
