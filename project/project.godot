@@ -10,6 +10,15 @@ config_version=5
 
 [application]
 
-config/name="godot cpp template"
-config/features=PackedStringArray("4.1", "Forward Plus")
+config/name="godot-vigem demo"
+run/main_scene="uid://dj0vyojw1mmyd"
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[display]
+
+window/size/viewport_width=957
+window/size/always_on_top=true
+window/energy_saving/keep_screen_on=false
+window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"

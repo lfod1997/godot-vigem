@@ -1,0 +1,478 @@
+[gd_scene load_steps=6 format=3 uid="uid://dj0vyojw1mmyd"]
+
+[ext_resource type="Texture2D" uid="uid://doeufnrtjsrfb" path="res://xbox_controller.svg" id="1_s3pjp"]
+[ext_resource type="Script" uid="uid://dmqtvg4gvh2ln" path="res://EncodedButton.gd" id="2_fqoxj"]
+
+[sub_resource type="GDScript" id="GDScript_fqoxj"]
+script/source = "extends Control
+
+func _input(evt: InputEvent) -> void: 
+    var evt_joy_btn := evt as InputEventJoypadButton
+    if evt_joy_btn: _print_button_event(evt_joy_btn)
+
+func _print_button_event(evt: InputEventJoypadButton) -> void:
+    print(\"%s %s from #%s\" % [
+        \"↓\" if evt.is_pressed() else \"↑\",
+        evt.as_text(),
+        evt.device
+    ])
+"
+
+[sub_resource type="GDScript" id="GDScript_s3pjp"]
+script/source = "extends GamepadEmulator
+
+@export var _buttons_root: Node
+
+# Avoids alloc on each `_send`; this is safe as node scripts are always on main thread
+var _temp_event := InputEventJoypadButton.new()
+
+func _ready() -> void:
+    if not _buttons_root.is_node_ready(): await _buttons_root.ready
+    for btn in _buttons_root.get_children():
+        if btn is EncodedButton: _register(btn)
+
+func _send(btn_idx: JoyButton, pressed: bool) -> void:
+    _temp_event.button_index = btn_idx
+    _temp_event.pressed = pressed
+    send_event(_temp_event)
+
+func _register(btn: EncodedButton) -> void:
+    btn.button_down.connect(_send.bind(btn.button_index, true))
+    btn.button_up.connect(_send.bind(btn.button_index, false))
+"
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s3pjp"]
+
+[node name="Control" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+script = SubResource("GDScript_fqoxj")
+metadata/_edit_lock_ = true
+
+[node name="XBox360ControllerEmulator" type="XBox360ControllerEmulator" parent="." node_paths=PackedStringArray("_buttons_root")]
+script = SubResource("GDScript_s3pjp")
+_buttons_root = NodePath("../Buttons")
+
+[node name="Image" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+texture = ExtResource("1_s3pjp")
+stretch_mode = 5
+metadata/_edit_lock_ = true
+
+[node name="Footer" type="VBoxContainer" parent="Image"]
+modulate = Color(1, 1, 1, 0.501961)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -238.0
+offset_top = 231.5
+offset_right = 238.0
+offset_bottom = 277.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+metadata/_edit_lock_ = true
+
+[node name="Credit" type="Label" parent="Image/Footer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Credit: Jishenaz  -  License: CC0 1.0"
+horizontal_alignment = 1
+
+[node name="Link" type="Label" parent="Image/Footer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 12
+text = "https://commons.wikimedia.org/wiki/File:Xbox_Controller.svg"
+horizontal_alignment = 1
+
+[node name="Buttons" type="Control" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="A" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 237.0
+offset_top = 34.0
+offset_right = 288.0
+offset_bottom = 78.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 0
+
+[node name="B" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 312.0
+offset_top = -27.0
+offset_right = 363.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 1
+
+[node name="X" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 170.0
+offset_top = -21.0
+offset_right = 221.0
+offset_bottom = 23.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 2
+
+[node name="Y" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 244.0
+offset_top = -82.0
+offset_right = 295.0
+offset_bottom = -34.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 3
+
+[node name="Back" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = -18.0
+offset_right = -71.0
+offset_bottom = 16.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 4
+
+[node name="Guide" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -40.0
+offset_top = -35.0
+offset_right = 39.0
+offset_bottom = 27.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 5
+
+[node name="Start" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 71.0
+offset_top = -17.0
+offset_right = 120.0
+offset_bottom = 17.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 6
+
+[node name="LB" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -349.0
+offset_top = -177.0
+offset_right = -192.0
+offset_bottom = -143.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = -0.141812
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 9
+
+[node name="RB" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = 191.0
+offset_top = -199.0
+offset_right = 348.0
+offset_bottom = -165.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 0.141372
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 10
+
+[node name="Up" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -155.0
+offset_top = 86.0
+offset_right = -116.0
+offset_bottom = 122.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 11
+
+[node name="Down" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = 156.0
+offset_right = -111.0
+offset_bottom = 192.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 12
+
+[node name="Left" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -199.0
+offset_top = 122.0
+offset_right = -160.0
+offset_bottom = 158.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 13
+
+[node name="Right" type="Button" parent="Buttons"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -106.0
+offset_top = 120.0
+offset_right = -67.0
+offset_bottom = 156.0
+grow_horizontal = 2
+grow_vertical = 2
+focus_mode = 0
+theme_override_styles/focus = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/hover = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
+theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
+script = ExtResource("2_fqoxj")
+button_index = 14
