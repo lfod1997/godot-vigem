@@ -64,8 +64,8 @@ if(WIN32)
         src/vigem_device.h
         src/vigem_server.cpp
         src/vigem_server.h
-        src/example_class.cpp
-        src/example_class.h
+        src/gamepad_emulator.cpp
+        src/gamepad_emulator.h
     )
 
     # Fetch a list of the xml files to use for documentation and add to our target

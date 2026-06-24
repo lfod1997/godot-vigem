@@ -5,7 +5,7 @@
 #include <godot_cpp/core/defs.hpp>
 
 #include "vigem_server.h"
-#include "example_class.h"
+#include "gamepad_emulator.h"
 
 using namespace godot;
 
@@ -21,7 +21,9 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level) {
 		break;
 	}
 	case MODULE_INITIALIZATION_LEVEL_SCENE: {
-		GDREGISTER_CLASS(ExampleClass);
+		GDREGISTER_ABSTRACT_CLASS(GamepadEmulator);
+		GDREGISTER_CLASS(XBox360ControllerEmulator);
+		GDREGISTER_CLASS(DualShock4Emulator);
 		break;
 	}
 	default: break;

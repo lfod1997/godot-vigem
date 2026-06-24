@@ -41,7 +41,7 @@ class ViGEmServer : public godot::Object {
 protected:
 	static void _bind_methods();
 
-	_FORCE_INLINE_ ViGEmServer() { _inst = this; }
+	ViGEmServer() { _inst = this; }
 
 	godot::Error init();
 	void finish();
