@@ -1,0 +1,17 @@
+[configuration]
+
+entry_symbol = "godot_vigem_init"
+compatibility_minimum = "4.4"
+reloadable = false
+
+[libraries]
+; Relative paths ensure that our GDExtension can be placed anywhere in the project directory.
+windows.x86_32.single.debug = "./windows/gdvigem.windows.template_debug.x86_32.dll"
+windows.x86_32.double.debug = "./windows/gdvigem.windows.template_debug.x86_32.double.dll"
+windows.x86_32.single.release = "./windows/gdvigem.windows.template_release.x86_32.dll"
+windows.x86_32.double.release = "./windows/gdvigem.windows.template_release.x86_32.double.dll"
+
+windows.x86_64.single.debug = "./windows/gdvigem.windows.template_debug.x86_64.dll"
+windows.x86_64.double.debug = "./windows/gdvigem.windows.template_debug.x86_64.double.dll"
+windows.x86_64.single.release = "./windows/gdvigem.windows.template_release.x86_64.dll"
+windows.x86_64.double.release = "./windows/gdvigem.windows.template_release.x86_64.double.dll"
