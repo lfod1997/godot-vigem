@@ -16,7 +16,7 @@ void initialize_gdextension_types(ModuleInitializationLevel p_level) {
 	case MODULE_INITIALIZATION_LEVEL_SERVERS: {
 		GDREGISTER_CLASS(ViGEmServer);
 		server = memnew(ViGEmServer);
-		Error err = server->init();
+		const Error err = server->init();
 		ERR_FAIL_COND_MSG(err != OK, vformat("ViGEmServer initialization failed: %s.", UtilityFunctions::error_string(err)));
 		break;
 	}

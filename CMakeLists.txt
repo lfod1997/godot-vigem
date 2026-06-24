@@ -54,10 +54,14 @@ if(WIN32)
 
     add_library(${LIBNAME} SHARED)
 
+    file(GLOB DEVICE_IMPL "src/vigem_device_*.cpp")
     target_sources(${LIBNAME}
         PRIVATE
         src/register_types.cpp
         src/register_types.h
+        src/vigem_device.cpp
+        ${DEVICE_IMPL}
+        src/vigem_device.h
         src/vigem_server.cpp
         src/vigem_server.h
         src/example_class.cpp
