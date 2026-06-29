@@ -1,11 +1,11 @@
 # Using the same minimum as the godot-cpp project
 cmake_minimum_required(VERSION 3.17)
 
-if(WIN32)
-    # Silence unused variable warning when specified from toolchain
-    if(CMAKE_C_COMPILER)
-    endif()
+# Silence unused variable warning when specified from toolchain
+if(CMAKE_C_COMPILER OR CMAKE_BUILD_TYPE)
+endif()
 
+if(WIN32)
     set(LIBNAME "gdvigem") # "The name of the library"
     set(GODOT_PROJECT_DIR "project" CACHE STRING "The directory of a Godot project folder")
 
@@ -95,7 +95,7 @@ if(WIN32)
         OUTPUT_NAME "${LIBNAME}${GODOTCPP_SUFFIX}"
     )
 
-    set(GODOT_PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_DIR}/bin/${GODOTCPP_PLATFORM}")
+    set(GODOT_PROJECT_BINARY_DIR "${PROJECT_SOURCE_DIR}/${GODOT_PROJECT_DIR}/addons/godot-vigem/bin/${GODOTCPP_PLATFORM}")
 
     add_custom_command(TARGET ${LIBNAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy "$<TARGET_FILE:${LIBNAME}>" "${GODOT_PROJECT_BINARY_DIR}/$<TARGET_FILE_NAME:${LIBNAME}>"
