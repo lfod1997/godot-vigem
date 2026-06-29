@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding" addBOMForNewFiles="with BOM under Windows, with no BOM otherwise">
+    <file url="file://$PROJECT_DIR$/packages/ViGEmClient/include/ViGEm/Client.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/packages/ViGEmClient/include/ViGEm/Common.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/packages/ViGEmClient/include/ViGEm/Util.h" charset="ISO-8859-1" />
+    <file url="file://$PROJECT_DIR$/packages/ViGEmClient/include/ViGEm/km/BusShared.h" charset="ISO-8859-1" />
+  </component>
+</project>

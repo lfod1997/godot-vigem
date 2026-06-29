@@ -46,9 +46,6 @@ compile_commands.json
 !.vscode/extensions.json
 .DS_Store
 
-# Jetbrains
-.idea/
-
 # Cmake
 cmake-build*
 CMakeUserPresets.json
