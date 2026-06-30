@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Demo Project" type="CMakeRunConfiguration" factoryName="Application" editBeforeRun="true" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" WORKING_DIR="file://$ProjectFileDir$/project" PASS_PARENT_ENVS_2="true" PROJECT_NAME="godot-vigem" TARGET_NAME="gdvigem" CONFIG_NAME="x86_64.single.debug" RUN_PATH="GODOT_EXE_HERE!">
+    <method v="2">
+      <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+    </method>
+  </configuration>
+</component>
