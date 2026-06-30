@@ -1,56 +1,53 @@
-# godot-cpp template
-This repository serves as a quickstart template for GDExtension development with Godot 4.0+.
+# Gamepad Emulator (ViGEm Client)
 
-## Contents
-* Preconfigured source files for C++ development of the GDExtension ([src/](./src/))
-* An empty Godot project in [project/](./project), to test the GDExtension
-* godot-cpp as a submodule (`godot-cpp/`)
-* GitHub Issues template ([.github/ISSUE_TEMPLATE.yml](./.github/ISSUE_TEMPLATE.yml))
-* GitHub CI/CD workflows to publish your library packages when creating a release ([.github/workflows/builds.yml](./.github/workflows/builds.yml))
-* An SConstruct file with various functions, such as boilerplate for [Adding documentation](https://docs.godotengine.org/en/stable/tutorials/scripting/cpp/gdextension_docs_system.html)
+![showcase.gif](.github/misc/img/showcase.gif)
 
-## Usage - Template
+"Do you not have an XBox or Dual Shock controller? You get one free."
 
-To use this template, log in to GitHub and click the green "Use this template" button at the top of the repository page. This will let you create a copy of this repository with a clean git history.
+This addon wraps the famous [nefarius/ViGEmBus](https://github.com/nefarius/ViGEmBus) driver in a node-like API.
 
-To get started with your new GDExtension, do the following:
+**Use cases:**
 
-* clone your repository to your local computer
-* initialize the godot-cpp git submodule via `git submodule update --init`
-* change the name of the compiled library file inside the [SConstruct](./SConstruct) file by modifying the `libname` string.
-  * change the paths of the to be loaded library name inside the [project/bin/example.gdextension](./project/bin/example.gdextension) file, by replacing `EXTENSION-NAME` with the name you chose for `libname`.
-* change the `entry_symbol` string inside [project/bin/example.gdextension](./project/bin/example.gdextension) file.
-  * rename the `example_library_init` function in [src/register_types.cpp](./src/register_types.cpp) to the same name you chose for `entry_symbol`.
-* change the name of the `project/bin/example.gdextension` file
+- Testing your game's controller support when you don't have an XBox or Sony controller.
+- Replaying controller input sequences accurately (to polish the feeling of your combat system etc.).
+- Hijacking inputs of a controller at system level and forward to a virtual one ([HidHide](https://github.com/nefarius/HidHide) is recommended as a companion for this use case).
+- And more, you get the idea.
 
-Now, you can build the project with the following command:
+**Disclaimer:**
 
-```shell
-scons
-```
+- Not to be confused with "virtual joystick" and "virtual gamepad", which is typically an input widget that allows touchscreen players to interact with your game in a console-like manner.
+- This addon is for *Windows* only.
+- ViGEm is [no longer maintained](https://docs.nefarius.at/projects/ViGEm/End-of-Life/) by its original author, but as a time-tested project it has served its users well. This addon only supports emulating controllers that ViGEm can, which are XBox 360 Controller and Dual Shock 4.
 
-If the build command worked, you can test it with the [project](./project) project. Import it into Godot, open it, and launch the main scene. You should see it print the following line in the console:
+## Installation
 
-```
-Type: 24
-```
+To install the addon:
 
-### Configuring an IDE
-You can develop your own extension with any text editor and by invoking scons on the command line, but if you want to work with an IDE (Integrated Development Environment), you can use a compilation database file called `compile_commands.json`. Most IDEs should automatically identify this file, and self-configure appropriately.
-To generate the database file, you can run one of the following commands in the project root directory:
-```shell
-# Generate compile_commands.json while compiling
-scons compiledb=yes
+1. **Make sure you have [ViGEmBus driver](https://github.com/nefarius/ViGEmBus#installation) installed** (typically you'll need to reboot after installing it),
+2. Grab the latest **godot-vigem.zip** in [addon release page](https://github.com/lfod1997/godot-vigem/releases/latest),
+3. Unzip everything into `YOUR_PROJECT/addons/godot-vigem/`,
+4. Open your project in *Godot Editor*, a line should have been printed: "Connected to ViGEm bus driver.", meaning everything's ready.
 
-# Generate compile_commands.json without compiling
-scons compiledb=yes compile_commands.json
-```
+## Usage
 
-## Usage - Actions
+1. Add a `XBox360ControllerEmulator` or `DualShock4Emulator` node into the scene tree to create a virtual controller device,
+2. Call its `send_event` method with an [InputEventJoypadButton](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadbutton.html) or [InputEventJoypadMotion](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadmotion.html) of your definition,
+3. Your virtual controller will send the event to your system, emulating a real controller connected to one of your USB ports,
+4. Of course that event will loop back into your game, because IT'S ACTS LIKE A REAL ONE,
+5. Removing the node from scene tree frees the virtual controller device.
 
-This repository comes with continuous integration (CI) through a GitHub action that tests building the GDExtension.
-It triggers automatically for each pushed change. You can find and edit it in [builds.yml](.github/workflows/ci.yml).
+## Contributing
 
-There is also a workflow ([make_build.yml](.github/workflows/make_build.yml)) that builds the GDExtension for all supported platforms that you can use to create releases.
-You can trigger this workflow manually from the `Actions` tab on GitHub.
-After it is complete, you can find the file `godot-cpp-template.zip` in the `Artifacts` section of the workflow run.
+- Please note that this addon is for Windows only.
+- Requires [Visual Studio with "Desktop development with C++" workload](https://learn.microsoft.com/en-us/cpp/build/vscpp-step-0-installation).
+- Clone the repo with submodules: `git clone --recursive git@github.com:lfod1997/godot-vigem.git`.
+- It is recommended to use the [now-free](https://blog.jetbrains.com/clion/2025/05/clion-is-now-free-for-non-commercial-use/) CLion IDE, because build profiles and a run configuration have been added for the project.
+- Alternatively, make sure you have [CMake ≥ 3.25](https://cmake.org/download/):
+  - To build for `template_debug` with `Debug` config:
+    - Configure: `cmake -S . -B cmake-build-debug -DCMAKE_BUILD_TYPE=Debug`
+    - Build: `cmake --build cmake-build-debug --target gdvigem --config Debug`
+  - To build for `template_release` with `Release` config:
+    - Configure: `cmake -S . -B cmake-build-release -DCMAKE_BUILD_TYPE=Release -DGODOTCPP_TARGET=template_release`
+    - Build: `cmake --build cmake-build-release --target gdvigem --config Release`
+  - To build for [double-precision Godot](https://docs.godotengine.org/en/stable/tutorials/physics/large_world_coordinates.html), add `-DGODOTCPP_PRECISION=double` when configuring.
+- Demo project at `/project/project.godot`.
