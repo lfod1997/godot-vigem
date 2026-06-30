@@ -1,10 +1,10 @@
-# Gamepad Emulator (ViGEm Client)
-
-![showcase.gif](.github/misc/img/showcase.gif)
+<img alt="Gamepad Emulator (ViGEm Client)" style="display: block; margin: 0 auto; max-width: 100%; height: auto;" src=".github/misc/img/godot-vigem-repo-logo.png"/>
 
 "Do you not have an XBox or Dual Shock controller? You get one free."
 
 This addon wraps the famous [nefarius/ViGEmBus](https://github.com/nefarius/ViGEmBus) driver in a node-like API.
+
+![showcase.gif](.github/misc/img/showcase.gif)
 
 **Use cases:**
 
