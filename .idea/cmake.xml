@@ -2,9 +2,9 @@
 <project version="4">
   <component name="CMakeSharedSettings">
     <configurations>
-      <configuration PROFILE_NAME="x86_64.single.debug" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DGODOTCPP_DEBUG_CRT=ON" NO_GENERATOR="true" />
+      <configuration PROFILE_NAME="x86_64.single.debug" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" NO_GENERATOR="true" />
       <configuration PROFILE_NAME="x86_64.single.release" ENABLED="true" CONFIG_NAME="Release" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DGODOTCPP_TARGET=template_release" NO_GENERATOR="true" />
-      <configuration PROFILE_NAME="x86_64.double.debug" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DGODOTCPP_DEBUG_CRT=ON -DGODOTCPP_PRECISION=double" NO_GENERATOR="true" />
+      <configuration PROFILE_NAME="x86_64.double.debug" ENABLED="true" CONFIG_NAME="Debug" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DGODOTCPP_PRECISION=double" NO_GENERATOR="true" />
       <configuration PROFILE_NAME="x86_64.double.release" ENABLED="true" CONFIG_NAME="Release" TOOLCHAIN_NAME="Visual Studio" GENERATION_OPTIONS="-DGODOTCPP_TARGET=template_release -DGODOTCPP_PRECISION=double" NO_GENERATOR="true" />
     </configurations>
   </component>

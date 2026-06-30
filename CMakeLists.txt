@@ -12,8 +12,6 @@ if(WIN32)
     # Make sure all the dependencies are satisfied
     find_package(Python3 3.4 REQUIRED)
     find_program(GIT git REQUIRED)
-    add_subdirectory(packages/ViGEmClient SYSTEM)
-    add_subdirectory(packages/frozen SYSTEM)
 
     # Ensure godot-cpp submodule has been updated
     if(NOT EXISTS "${CMAKE_CURRENT_LIST_DIR}/godot-cpp/src")
@@ -28,6 +26,11 @@ if(WIN32)
         )
     endif()
     add_subdirectory(godot-cpp SYSTEM)
+
+    # Add packages after `add_subdirectory(godot-cpp)`
+    # https://github.com/godotengine/godot-docs-user-notes/discussions/541#discussioncomment-17473321
+    add_subdirectory(packages/ViGEmClient SYSTEM)
+    add_subdirectory(packages/frozen SYSTEM)
 
     # When compiling for emscripten, this toolchainhack needs to be included.
     # set(CMAKE_PROJECT_<project-name>_INCLUDE ${godot-cpp_SOURCE_DIR}/cmake/emsdkHack.cmake)
