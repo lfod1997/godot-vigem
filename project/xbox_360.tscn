@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dj0vyojw1mmyd"]
+[gd_scene load_steps=16 format=3 uid="uid://dj0vyojw1mmyd"]
 
 [ext_resource type="Texture2D" uid="uid://doeufnrtjsrfb" path="res://xbox_controller.svg" id="1_s3pjp"]
 [ext_resource type="Script" uid="uid://dmqtvg4gvh2ln" path="res://EncodedButton.gd" id="2_fqoxj"]
@@ -19,9 +19,11 @@ func _print_button_event(evt: InputEventJoypadButton) -> void:
 "
 
 [sub_resource type="GDScript" id="GDScript_s3pjp"]
-script/source = "extends GamepadEmulator
+script/source = "extends XBox360ControllerEmulator
 
 @export var _buttons_root: Node
+@export var _leds: Array[Control]
+@export var _vibration_animation_tree: AnimationTree
 
 # Avoids alloc on each `_send`; this is safe as node scripts are always on main thread
 var _temp_event := InputEventJoypadButton.new()
@@ -30,6 +32,8 @@ func _ready() -> void:
     if not _buttons_root.is_node_ready(): await _buttons_root.ready
     for btn in _buttons_root.get_children():
         if btn is EncodedButton: _register(btn)
+    _on_led_number_changed(led_number)
+    _on_vibration_changed(vibration_weak, vibration_strong)
 
 func _send(btn_idx: JoyButton, pressed: bool) -> void:
     _temp_event.button_index = btn_idx
@@ -39,9 +43,114 @@ func _send(btn_idx: JoyButton, pressed: bool) -> void:
 func _register(btn: EncodedButton) -> void:
     btn.button_down.connect(_send.bind(btn.button_index, true))
     btn.button_up.connect(_send.bind(btn.button_index, false))
+
+func _on_led_number_changed(num: int):
+    for led in _leds: led.visible = false
+    _leds[num % 4].visible = true
+
+func _on_vibration_changed(weak_magnitude: float, strong_magnitude: float):
+    _vibration_animation_tree.set(\"parameters/blend_position\", Vector2(weak_magnitude, strong_magnitude))
 "
 
+[sub_resource type="Gradient" id="Gradient_fqoxj"]
+offsets = PackedFloat32Array(0, 0.777311)
+colors = PackedColorArray(0.783333, 1, 0, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dcjf8"]
+gradient = SubResource("Gradient_fqoxj")
+width = 24
+height = 24
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_s3pjp"]
+
+[sub_resource type="Animation" id="Animation_dcjf8"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Image:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Image:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_crjio"]
+resource_name = "vib_strong"
+length = 0.0667
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Image:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0166667, 0.0333333, 0.05, 0.0666),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [0.0, 0.0872665, 0.0, -0.0872665, 0.0]
+}
+
+[sub_resource type="Animation" id="Animation_cr31q"]
+resource_name = "vib_weak"
+length = 0.0667
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Image:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.0167, 0.0333, 0.05, 0.0666),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(9, 0), Vector2(0, 0), Vector2(-9, 0), Vector2(0, 0)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_lrkex"]
+_data = {
+&"RESET": SubResource("Animation_dcjf8"),
+&"vib_strong": SubResource("Animation_crjio"),
+&"vib_weak": SubResource("Animation_cr31q")
+}
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_crjio"]
+animation = &"RESET"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_lrkex"]
+animation = &"vib_strong"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_eb2o2"]
+animation = &"vib_weak"
+
+[sub_resource type="AnimationNodeBlendSpace2D" id="AnimationNodeBlendSpace2D_mim2t"]
+blend_point_0/node = SubResource("AnimationNodeAnimation_crjio")
+blend_point_0/pos = Vector2(0, 0)
+blend_point_1/node = SubResource("AnimationNodeAnimation_lrkex")
+blend_point_1/pos = Vector2(0, 2)
+blend_point_2/node = SubResource("AnimationNodeAnimation_eb2o2")
+blend_point_2/pos = Vector2(2, 0)
+max_space = Vector2(2, 2)
+snap = Vector2(1, 1)
 
 [node name="Control" type="Control"]
 layout_mode = 3
@@ -54,53 +163,76 @@ mouse_filter = 2
 script = SubResource("GDScript_fqoxj")
 metadata/_edit_lock_ = true
 
-[node name="XBox360ControllerEmulator" type="XBox360ControllerEmulator" parent="." node_paths=PackedStringArray("_buttons_root")]
+[node name="XBox360ControllerEmulator" type="XBox360ControllerEmulator" parent="." node_paths=PackedStringArray("_buttons_root", "_leds", "_vibration_animation_tree")]
 script = SubResource("GDScript_s3pjp")
-_buttons_root = NodePath("../Buttons")
+_buttons_root = NodePath("../Image/Buttons")
+_leds = [NodePath("../Image/LEDs/LED0"), NodePath("../Image/LEDs/LED1"), NodePath("../Image/LEDs/LED2"), NodePath("../Image/LEDs/LED3")]
+_vibration_animation_tree = NodePath("../VibrationAnimation")
 
 [node name="Image" type="TextureRect" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
+offset_right = 7.0
 grow_horizontal = 2
 grow_vertical = 2
+pivot_offset = Vector2(482, 324)
 mouse_filter = 2
 texture = ExtResource("1_s3pjp")
 stretch_mode = 5
-metadata/_edit_lock_ = true
 
-[node name="Footer" type="VBoxContainer" parent="Image"]
-modulate = Color(1, 1, 1, 0.501961)
+[node name="LEDs" type="Control" parent="Image"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -238.0
-offset_top = 231.5
-offset_right = 238.0
-offset_bottom = 277.5
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 0
-metadata/_edit_lock_ = true
 
-[node name="Credit" type="Label" parent="Image/Footer"]
-layout_mode = 2
-size_flags_horizontal = 4
-text = "Credit: Jishenaz  -  License: CC0 1.0"
-horizontal_alignment = 1
+[node name="LED0" type="TextureRect" parent="Image/LEDs"]
+layout_mode = 0
+offset_left = -59.0
+offset_top = -20.0
+offset_right = -15.0
+offset_bottom = -7.0
+rotation = -0.717188
+texture = SubResource("GradientTexture2D_dcjf8")
+expand_mode = 1
 
-[node name="Link" type="Label" parent="Image/Footer"]
-layout_mode = 2
-size_flags_horizontal = 4
-theme_override_font_sizes/font_size = 12
-text = "https://commons.wikimedia.org/wiki/File:Xbox_Controller.svg"
-horizontal_alignment = 1
+[node name="LED1" type="TextureRect" parent="Image/LEDs"]
+layout_mode = 0
+offset_left = -21.0
+offset_top = 44.0
+offset_right = 23.0
+offset_bottom = 57.0
+rotation = -2.46978
+texture = SubResource("GradientTexture2D_dcjf8")
+expand_mode = 1
 
-[node name="Buttons" type="Control" parent="."]
+[node name="LED2" type="TextureRect" parent="Image/LEDs"]
+layout_mode = 0
+offset_left = 22.0001
+offset_top = -50.0
+offset_right = 66.0001
+offset_bottom = -37.0
+rotation = 0.71733
+texture = SubResource("GradientTexture2D_dcjf8")
+expand_mode = 1
+
+[node name="LED3" type="TextureRect" parent="Image/LEDs"]
+layout_mode = 0
+offset_left = 53.0
+offset_top = 16.0
+offset_right = 97.0
+offset_bottom = 29.0
+rotation = 2.46964
+texture = SubResource("GradientTexture2D_dcjf8")
+expand_mode = 1
+
+[node name="Buttons" type="Control" parent="Image"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -111,7 +243,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="A" type="Button" parent="Buttons"]
+[node name="A" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -139,7 +271,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 0
 
-[node name="B" type="Button" parent="Buttons"]
+[node name="B" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -167,16 +299,16 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 1
 
-[node name="X" type="Button" parent="Buttons"]
+[node name="X" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = 170.0
+offset_left = 169.0
 offset_top = -21.0
-offset_right = 221.0
+offset_right = 220.0
 offset_bottom = 23.0
 grow_horizontal = 2
 grow_vertical = 2
@@ -195,7 +327,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 2
 
-[node name="Y" type="Button" parent="Buttons"]
+[node name="Y" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -223,7 +355,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 3
 
-[node name="Back" type="Button" parent="Buttons"]
+[node name="Back" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -251,7 +383,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 4
 
-[node name="Guide" type="Button" parent="Buttons"]
+[node name="Guide" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -279,7 +411,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 5
 
-[node name="Start" type="Button" parent="Buttons"]
+[node name="Start" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -307,7 +439,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 6
 
-[node name="LB" type="Button" parent="Buttons"]
+[node name="LB" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -336,7 +468,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 9
 
-[node name="RB" type="Button" parent="Buttons"]
+[node name="RB" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -365,7 +497,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 10
 
-[node name="Up" type="Button" parent="Buttons"]
+[node name="Up" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -393,7 +525,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 11
 
-[node name="Down" type="Button" parent="Buttons"]
+[node name="Down" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -421,7 +553,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 12
 
-[node name="Left" type="Button" parent="Buttons"]
+[node name="Left" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -449,7 +581,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 13
 
-[node name="Right" type="Button" parent="Buttons"]
+[node name="Right" type="Button" parent="Image/Buttons"]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -476,3 +608,42 @@ theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_s3pjp")
 theme_override_styles/normal = SubResource("StyleBoxEmpty_s3pjp")
 script = ExtResource("2_fqoxj")
 button_index = 14
+
+[node name="Footer" type="VBoxContainer" parent="."]
+modulate = Color(1, 1, 1, 0.501961)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -234.5
+offset_top = 231.5
+offset_right = 241.5
+offset_bottom = 277.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 0
+
+[node name="Credit" type="Label" parent="Footer"]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Credit: Jishenaz  -  License: CC0 1.0"
+horizontal_alignment = 1
+
+[node name="Link" type="Label" parent="Footer"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 12
+text = "https://commons.wikimedia.org/wiki/File:Xbox_Controller.svg"
+horizontal_alignment = 1
+
+[node name="VibrationAnimation" type="AnimationTree" parent="."]
+libraries = {
+&"": SubResource("AnimationLibrary_lrkex")
+}
+tree_root = SubResource("AnimationNodeBlendSpace2D_mim2t")
+parameters/blend_position = Vector2(0, 0)
+
+[connection signal="led_number_changed" from="XBox360ControllerEmulator" to="XBox360ControllerEmulator" method="_on_led_number_changed"]
+[connection signal="vibration_changed" from="XBox360ControllerEmulator" to="XBox360ControllerEmulator" method="_on_vibration_changed"]
