@@ -9,7 +9,7 @@ This addon wraps the famous [nefarius/ViGEmBus](https://github.com/nefarius/ViGE
 **Use cases:**
 
 - Testing your game's controller support when you don't have an XBox or Sony controller.
-- Replaying controller input sequences accurately (to polish the feeling of your combat system etc.).
+- Making up and replaying controller input sequences accurately (to polish the feeling of your combat system etc.).
 - Hijacking inputs of a controller at system level and forward to a virtual one ([HidHide](https://github.com/nefarius/HidHide) is recommended as a companion for this use case).
 - And more, you get the idea.
 
@@ -25,15 +25,15 @@ To install the addon:
 
 1. **Make sure you have [ViGEmBus driver](https://github.com/nefarius/ViGEmBus#installation) installed** (typically you'll need to reboot after installing it),
 2. Grab the latest **godot-vigem.zip** in [addon release page](https://github.com/lfod1997/godot-vigem/releases/latest),
-3. Unzip everything into `YOUR_PROJECT/addons/godot-vigem/`,
+3. Unzip to get a folder named `addons`, put it in your project's root directory,
 4. Open your project in *Godot Editor*, a line should have been printed: "Connected to ViGEm bus driver.", meaning everything's ready.
 
 ## Usage
 
 1. Add a `XBox360ControllerEmulator` or `DualShock4Emulator` node into the scene tree to create a virtual controller device,
-2. Call its `send_event` method with an [InputEventJoypadButton](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadbutton.html) or [InputEventJoypadMotion](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadmotion.html) of your definition,
+2. Call its `send_event` method with an [InputEventJoypadButton](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadbutton.html) or [InputEventJoypadMotion](https://docs.godotengine.org/en/stable/classes/class_inputeventjoypadmotion.html) of your definition: `emulator.send_event(my_event)`,
 3. Your virtual controller will send the event to your system, emulating a real controller connected to one of your USB ports,
-4. Of course that event will loop back into your game, because IT'S ACTS LIKE A REAL ONE,
+4. Of course that event will loop back into your game, because the virtual device ACTS LIKE A REAL ONE,
 5. Removing the node from scene tree frees the virtual controller device.
 
 ## Contributing
