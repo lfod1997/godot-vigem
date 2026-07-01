@@ -62,7 +62,7 @@ Error ViGEmServer::destroy_device(const RID &p_device) {
 	MutexLock _{ *_mutex.ptr() };
 
 	ViGEmDevice *device = _device_owner.get_or_null(p_device);
-	ERR_FAIL_COND_V_MSG(!device, ERR_INVALID_PARAMETER, "Attempting to destroy an invalid device.");
+	ERR_FAIL_NULL_V_MSG(device, ERR_INVALID_PARAMETER, "Attempting to destroy an invalid device.");
 	memdelete(device);
 	_device_owner.free(p_device);
 	return OK;
@@ -74,7 +74,7 @@ Error ViGEmServer::send_event_to_device(const RID &p_device, const Ref<InputEven
 	MutexLock _{ *_mutex.ptr() };
 
 	ViGEmDevice *device = _device_owner.get_or_null(p_device);
-	ERR_FAIL_COND_V_MSG(!device, ERR_INVALID_PARAMETER, "Attempting to send event to an invalid device.");
+	ERR_FAIL_NULL_V_MSG(device, ERR_INVALID_PARAMETER, "Attempting to send event to an invalid device.");
 	return device->send_event(p_evt);
 }
 
@@ -84,6 +84,6 @@ void ViGEmServer::reset_device(const RID &p_device) {
 	MutexLock _{ *_mutex.ptr() };
 
 	ViGEmDevice *device = _device_owner.get_or_null(p_device);
-	ERR_FAIL_COND_MSG(!device, "Attempting to reset an invalid device.");
+	ERR_FAIL_NULL_MSG(device, "Attempting to reset an invalid device.");
 	return device->reset_state();
 }

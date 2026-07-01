@@ -47,6 +47,7 @@ public:
 	}
 
 	void reset_state() override;
+	godot::Error register_notification_handler(PFN_VIGEM_X360_NOTIFICATION p_handler, void *p_ctx);
 };
 
 class ViGEmDeviceDS4 : public ViGEmDevice {
@@ -73,6 +74,7 @@ public:
 	}
 
 	void reset_state() override;
+	godot::Error register_notification_handler(PFN_VIGEM_DS4_NOTIFICATION p_handler, void *p_ctx);
 };
 
 #endif // GDVIGEM_VIGEM_DEVICE

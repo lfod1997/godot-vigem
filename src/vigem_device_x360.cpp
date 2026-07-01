@@ -67,4 +67,10 @@ VIGEM_ERROR ViGEmDeviceX360::update_axis(const Ref<InputEventJoypadMotion> &p_ev
 	return vigem_target_x360_update(_client, _target, _state);
 }
 
+Error ViGEmDeviceX360::register_notification_handler(PFN_VIGEM_X360_NOTIFICATION p_handler, void *p_ctx) {
+	if (const VIGEM_ERROR err = vigem_target_x360_register_notification(_client, _target, p_handler, p_ctx); VIGEM_SUCCESS(err)) { return OK; }
+	else if (err == VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED) { return ERR_ALREADY_IN_USE; }
+	else { return ERR_CONNECTION_ERROR; }
+}
+
 void ViGEmDeviceX360::reset_state() { XUSB_REPORT_INIT(&_state); }

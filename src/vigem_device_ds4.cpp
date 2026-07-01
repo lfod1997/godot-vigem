@@ -123,6 +123,13 @@ VIGEM_ERROR ViGEmDeviceDS4::update_axis(const Ref<InputEventJoypadMotion> &p_evt
 	return vigem_target_ds4_update(_client, _target, _state);
 }
 
+Error ViGEmDeviceDS4::register_notification_handler(PFN_VIGEM_DS4_NOTIFICATION p_handler, void *p_ctx) {
+	// TODO: Use `vigem_target_ds4_await_output_report` in a thread instead (current approach uses std::thread anyway)
+	if (const VIGEM_ERROR err = vigem_target_ds4_register_notification(_client, _target, p_handler, p_ctx); VIGEM_SUCCESS(err)) { return OK; }
+	else if (err == VIGEM_ERROR_CALLBACK_ALREADY_REGISTERED) { return ERR_ALREADY_IN_USE; }
+	else { return ERR_CONNECTION_ERROR; }
+}
+
 void ViGEmDeviceDS4::reset_state() {
 	DS4_REPORT_INIT(&_state);
 	_dpad_bits = 0;
